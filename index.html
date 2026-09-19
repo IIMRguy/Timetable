@@ -777,6 +777,7 @@
   </div>
 </div>
 
+<script src="config.js"></script>
 <script>
 (function () {
   /* ================= THEME ================= */
@@ -799,8 +800,8 @@
     }
   }
   /* ================= CLASS SHEET SETTINGS ================= */
-  // Paste the Apps Script web app link between the quotes to turn on the class sheet.
-  var CLOUD_URL = window.TERM5_CLOUD_URL || 'https://script.google.com/macros/s/AKfycbyExdF-fs5aCERB5GepQNWa2PrudLaXKnqK55sRvHD3quh-naUPCpMT-H_I2rPZWgx4/exec';
+  // Put the Apps Script web app link in the file config.js (next to this page). It can also be pasted between the quotes below.
+  var CLOUD_URL = window.TERM5_CLOUD_URL || 'PASTE_WEB_APP_URL_HERE';
   var CLOUD_ON = /^https?:\/\//.test(CLOUD_URL);
   var SYNC_KEYS = { 'term5-my-courses-v1': 1, 'term5-reschedules-v2': 1, 'term5-attendance-v2': 1, 'term5-user-name-v1': 1, 'term5-friend-rolls-v1': 1 };
   var cloud = { on: CLOUD_ON, state: CLOUD_ON ? 'signedout' : 'local', roll: '', token: '', version: 0, share: true, applying: false, dirty: false, saving: false, again: false, timer: null };
@@ -2189,14 +2190,65 @@
   }
 
   /* ---- talking to the Apps Script web app ---- */
-  function cloudCall(action, body) {
+  // Two routes to the same web app: a direct request, and a hidden frame that receives the reply as a message.
+  // Some browsers refuse to hand over the direct reply, so if one route fails the other is tried with the same
+  // request id (the sheet remembers request ids, so nothing is applied twice).
+  var TRANSPORT_KEY = 'term5-transport-v1';
+  var DIRECT_TIMEOUT_MS = 20000, FRAME_TIMEOUT_MS = 15000;
+  var transport = getStored(TRANSPORT_KEY) === 'frame' ? 'frame' : 'direct';
+  var cloudHost = ''; try { cloudHost = new URL(CLOUD_URL).hostname; } catch (e) {}
+
+  function newRequestId() { return 'r' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10); }
+  function shortMsg(e) { return String(e && e.message ? e.message : e || 'unknown').slice(0, 60); }
+
+  function directCall(payload) {
     var ctrl = window.AbortController ? new AbortController() : null;
-    var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 30000);
+    var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, DIRECT_TIMEOUT_MS);
     return fetch(CLOUD_URL, {
       method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, redirect: 'follow',
-      body: JSON.stringify(Object.assign({ action: action }, body || {})), signal: ctrl ? ctrl.signal : undefined
-    }).then(function (r) { clearTimeout(timer); return r.text(); }, function (e) { clearTimeout(timer); throw { offline: true, cause: e }; })
-      .then(function (txt) { try { return JSON.parse(txt); } catch (e) { throw { bad: true }; } });
+      body: JSON.stringify(payload), signal: ctrl ? ctrl.signal : undefined
+    }).then(function (r) { clearTimeout(timer); return r.text(); }, function (e) { clearTimeout(timer); throw { offline: true, detail: 'direct: ' + shortMsg(e) }; })
+      .then(function (txt) { try { return JSON.parse(txt); } catch (e) { throw { bad: true, detail: 'reply was not JSON: ' + txt.slice(0, 50).replace(/\s+/g, ' ') }; } });
+  }
+
+  function frameCall(payload) {
+    return new Promise(function (resolve, reject) {
+      var name = 'term5frame' + payload.requestId;
+      var iframe = document.createElement('iframe');
+      iframe.name = name; iframe.style.cssText = 'display:none;width:0;height:0;border:0;'; iframe.setAttribute('aria-hidden', 'true');
+      var form = document.createElement('form');
+      form.method = 'POST'; form.action = CLOUD_URL; form.target = name; form.acceptCharset = 'UTF-8'; form.style.display = 'none';
+      var input = document.createElement('input');
+      input.type = 'hidden'; input.name = 'payload'; input.value = JSON.stringify(payload);
+      form.appendChild(input);
+      var done = false;
+      function finish() { done = true; clearTimeout(timer); window.removeEventListener('message', onMsg); if (iframe.parentNode) iframe.parentNode.removeChild(iframe); if (form.parentNode) form.parentNode.removeChild(form); }
+      function onMsg(ev) {
+        var d = ev.data;
+        if (done || !d || d.term5 !== payload.requestId) return;
+        var host = ''; try { host = new URL(ev.origin).hostname; } catch (e) {}
+        if (host !== cloudHost && !/(^|\.)googleusercontent\.com$/.test(host) && host !== 'script.google.com') return;
+        finish(); resolve(d.result);
+      }
+      var timer = setTimeout(function () { if (!done) { finish(); reject({ offline: true, detail: 'frame: no reply after ' + Math.round(FRAME_TIMEOUT_MS / 1000) + ' s' }); } }, FRAME_TIMEOUT_MS);
+      window.addEventListener('message', onMsg);
+      document.body.appendChild(iframe); document.body.appendChild(form);
+      form.submit();
+    });
+  }
+
+  function cloudCall(action, body) {
+    var payload = Object.assign({ action: action, requestId: newRequestId() }, body || {});
+    var first = transport === 'frame' ? frameCall : directCall;
+    var second = transport === 'frame' ? directCall : frameCall;
+    return first(payload).catch(function (e1) {
+      if (!e1 || !e1.offline || navigator.onLine === false) throw e1;
+      return second(payload).then(function (res) {
+        transport = second === frameCall ? 'frame' : 'direct';
+        try { window.localStorage.setItem(TRANSPORT_KEY, transport); } catch (e) {}
+        return res;
+      }, function (e2) { throw { offline: true, detail: [e1.detail, e2 && e2.detail].filter(Boolean).join('; ') }; });
+    });
   }
 
   /* ---- session (roll number and a random token, never the PIN) ---- */
@@ -2272,9 +2324,10 @@
   function savePayload() {
     return { action: 'save', roll: cloud.roll, token: cloud.token, baseVersion: cloud.version, name: getName(), share: cloud.share, data: fullData() };
   }
-  function goOffline() {
+  function goOffline(e) {
     cloud.state = 'offline';
-    showBanner('You are offline. You can still view your saved timetable, but changes are disabled until you are back online.', false, true);
+    var why = navigator.onLine !== false && e && e.detail ? ' (' + e.detail + ')' : '';
+    showBanner((navigator.onLine === false || !why ? 'You are offline.' : 'Could not reach the class sheet.') + ' You can still view your saved timetable, but changes are disabled until it is reachable again.' + why, false, true);
     setEditable(false); setFoot('Offline');
   }
   function cloudTouched() {
@@ -2304,7 +2357,7 @@
       cloud.dirty = true; showBanner(res.message || 'Could not save your changes.', true, true); setFoot('Not saved');
     }).catch(function (e) {
       cloud.saving = false; cloud.dirty = true;
-      if (e && e.offline) goOffline(); else showBanner('Could not save. The class sheet link may not be set up correctly.', true, true);
+      if (e && e.offline) goOffline(e); else showBanner('Could not save. The class sheet replied with something unexpected.' + (e && e.detail ? ' (' + e.detail + ')' : ''), true, true);
     });
   }
   function cloudLoad(force) {
@@ -2319,7 +2372,7 @@
       hideBanner(); setEditable(true); setFoot('Saved');
       return true;
     }).catch(function (e) {
-      if (e && e.offline) goOffline(); else showBanner('The class sheet link is not set up correctly.', true, true);
+      if (e && e.offline) goOffline(e); else showBanner('The class sheet replied with something unexpected.' + (e && e.detail ? ' (' + e.detail + ')' : ''), true, true);
       return false;
     });
   }
@@ -2362,7 +2415,7 @@
         cloudPeople = map;
         try { window.localStorage.setItem(PEOPLE_KEY, JSON.stringify(map)); } catch (e) {}
       } else if (res.error === 'auth') forceSignOut('Your session ended. Please sign in again.');
-    }).catch(function (e) { if (e && e.offline && cloud.state === 'ready') goOffline(); });
+    }).catch(function (e) { if (e && e.offline && cloud.state === 'ready') goOffline(e); });
   }
   setInterval(function () {
     if (CLOUD_ON && cloud.state === 'ready' && !document.hidden && panelFind.classList.contains('active')) fetchPeople().then(function () { if (panelFind.classList.contains('active')) renderFindTab(); });
@@ -2458,7 +2511,8 @@
       finishSignIn(roll, res);
     }).catch(function (e) {
       authBusy(false); setAuthMode(authMode);
-      authError.textContent = e && e.offline ? 'Cannot reach the class sheet. Check your internet and try again.' : 'The class sheet link is not set up correctly. Ask Anish.';
+      var why = e && e.detail ? ' (' + e.detail + ')' : '';
+      authError.textContent = e && e.offline ? 'Cannot reach the class sheet. Check your internet and try again.' + why : 'The class sheet replied with something unexpected. Check the web app settings.' + why;
     });
   }
   function finishSignIn(roll, res) {
