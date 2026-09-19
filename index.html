@@ -800,7 +800,7 @@
   }
   /* ================= CLASS SHEET SETTINGS ================= */
   // Paste the Apps Script web app link between the quotes to turn on the class sheet.
-  var CLOUD_URL = window.TERM5_CLOUD_URL || 'PASTE_WEB_APP_URL_HERE';
+  var CLOUD_URL = window.TERM5_CLOUD_URL || 'https://script.google.com/macros/s/AKfycbyExdF-fs5aCERB5GepQNWa2PrudLaXKnqK55sRvHD3quh-naUPCpMT-H_I2rPZWgx4/exec';
   var CLOUD_ON = /^https?:\/\//.test(CLOUD_URL);
   var SYNC_KEYS = { 'term5-my-courses-v1': 1, 'term5-reschedules-v2': 1, 'term5-attendance-v2': 1, 'term5-user-name-v1': 1, 'term5-friend-rolls-v1': 1 };
   var cloud = { on: CLOUD_ON, state: CLOUD_ON ? 'signedout' : 'local', roll: '', token: '', version: 0, share: true, applying: false, dirty: false, saving: false, again: false, timer: null };
