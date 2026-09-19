@@ -307,23 +307,26 @@
 
   /* ---------- Find a time ---------- */
   .find-panel { padding: 14px 16px 14px; }
-  .find-top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px 24px; align-items: end; }
+  .find-head { padding: 10px 16px 10px; }
+  .find-top { display: grid; grid-template-columns: minmax(0, auto) minmax(0, 1fr); gap: 6px 24px; align-items: end; }
   @media (max-width: 900px) { .find-top { grid-template-columns: minmax(0, 1fr); } }
-  .find-left, .find-right { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 8px 10px; min-width: 0; }
-  .find-name { flex: 0 1 180px; }
+  .find-fields { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 8px 10px; min-width: 0; }
+  .find-name { flex: 0 0 170px; }
+  .find-search { flex: 0 0 210px; }
   .find-paste-wrap { flex: 1 1 200px; min-width: 0; }
   .find-paste { resize: none; height: 34px; overflow: hidden; line-height: 1.4; box-sizing: border-box; }
   .find-top .save-btn { padding: 8px 15px; }
   .find-top .export-btn { padding: 8px 12px; }
+  .field-hint { font-size: 11.5px; font-weight: 600; color: var(--ink-faint); margin-top: 1px; }
   .find-name .field-input { box-sizing: border-box; height: 34px; }
   .find-code { display: block; width: 100%; box-sizing: border-box; margin-top: 10px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 11.5px; line-height: 1.5; color: var(--ink-soft); background: var(--surface-alt); border: 1px solid var(--border); border-radius: 9px; padding: 10px 11px; resize: none; word-break: break-all; }
   .find-code[hidden] { display: none; }
-  .find-row2 { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; margin-top: 12px; }
-  .find-chips { display: flex; flex-wrap: wrap; gap: 8px; flex: 1 1 auto; min-width: 0; }
+  .find-line { grid-column: 1 / -1; display: flex; align-items: center; gap: 6px 18px; flex-wrap: wrap; min-width: 0; }
+  .find-chips { display: flex; flex-wrap: wrap; gap: 6px 8px; justify-content: flex-end; min-width: 0; }
   .find-status { font-size: 12px; font-weight: 600; color: var(--ink-faint); line-height: 1.4; }
   .find-status.error { color: var(--absent); }
-  .find-row2 .find-status { flex: 0 1 300px; text-align: right; }
-  @media (max-width: 700px) { .find-row2 .find-status { flex-basis: 100%; text-align: left; } }
+  .find-line .find-status { flex: 1 1 0; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  @media (max-width: 700px) { .find-line .find-status { flex-basis: 100%; white-space: normal; } .find-chips { justify-content: flex-start; } }
   .pchip { display: inline-flex; align-items: center; gap: 8px; padding: 4px 6px 4px 5px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface-alt); font-size: 12.5px; font-weight: 700; color: var(--ink); max-width: 100%; }
   .pchip .pname { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .pchip .you { font-size: 11px; font-weight: 600; color: var(--ink-faint); padding-right: 6px; }
@@ -350,13 +353,13 @@
   .seg button.active { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
 
   .find-scroll { overflow-x: auto; padding-bottom: 4px; }
-  .find-grid { display: grid; grid-template-columns: 88px repeat(7, minmax(116px, 1fr)); grid-template-rows: auto repeat(7, minmax(62px, auto)); gap: 6px; min-width: 920px; }
+  .find-grid { display: grid; grid-template-columns: 88px repeat(7, minmax(116px, 1fr)); grid-template-rows: auto repeat(7, minmax(56px, auto)); gap: 6px; min-width: 920px; }
   .fhead { padding: 2px 8px 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-faint); }
   .fhead .d { display: block; text-transform: none; letter-spacing: 0; font-size: 11.5px; font-weight: 600; color: var(--ink-soft); margin-top: 2px; }
   .fhead.cur, .fhead.cur .d { color: var(--accent); }
   .ftime { padding: 7px 6px; font-size: 11.5px; font-weight: 700; color: var(--ink-faint); line-height: 1.45; }
   .ftime span { display: block; font-weight: 600; opacity: 0.75; }
-  .fcell { border-radius: 12px; padding: 8px 10px; border: 1px solid transparent; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; }
+  .fcell { border-radius: 12px; padding: 7px 10px; border: 1px solid transparent; display: flex; flex-direction: column; justify-content: space-between; gap: 4px; }
   .fcell.all-free { background: var(--present-bg); border-color: color-mix(in srgb, var(--present) 30%, transparent); color: var(--present); justify-content: flex-start; gap: 4px; }
   .ffree { display: flex; align-items: flex-start; gap: 6px; font-size: 12.5px; font-weight: 800; }
   .ffree svg { width: 14px; height: 14px; margin-top: 1px; flex-shrink: 0; }
@@ -386,7 +389,8 @@
   .auth-error { min-height: 18px; margin: 8px 0 0; font-size: 12.5px; font-weight: 600; color: var(--absent); line-height: 1.4; }
   .auth-note { font-size: 12px; color: var(--ink-faint); line-height: 1.5; margin: 12px 0 0; }
   .credit-link { background: none; border: none; padding: 0; font: inherit; color: inherit; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
-  .find-search { position: relative; flex: 1 1 200px; min-width: 0; }
+  .find-search { position: relative; flex: 0 0 210px; min-width: 0; }
+  .find-search .field-input { box-sizing: border-box; height: 34px; }
   .find-results { position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 30; background: var(--surface); border: 1px solid var(--border-strong); border-radius: 10px; box-shadow: var(--shadow); max-height: 260px; overflow-y: auto; padding: 4px; }
   .find-results[hidden] { display: none; }
   .fres { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; width: 100%; text-align: left; border: none; background: transparent; padding: 8px 10px; border-radius: 7px; cursor: pointer; font-family: 'Manrope', sans-serif; font-size: 12.5px; font-weight: 700; color: var(--ink); }
@@ -588,33 +592,31 @@
 
   <!-- ===================== FIND A TIME TAB ===================== -->
   <div class="tab-panel" id="panelFind">
-    <div class="panel find-panel">
+    <div class="panel find-panel find-head">
       <div class="find-top">
-        <div class="find-left">
+        <div class="find-fields">
           <label class="name-field find-name">Your name
             <input class="field-input" id="findName" maxlength="24" placeholder="e.g. Anish" autocomplete="given-name">
           </label>
-          <label class="check cloud-only find-share"><input type="checkbox" id="findShare" checked>Show my busy times to classmates</label>
-          <button class="save-btn local-only" type="button" id="findCopy">Copy code</button>
-          <button class="export-btn local-only" type="button" id="findCopyMsg">Copy as message</button>
-        </div>
-        <div class="find-right">
           <div class="name-field find-search cloud-only">
             <label for="findSearch">Add a classmate</label>
-            <input class="field-input" id="findSearch" placeholder="Search by name or roll number" autocomplete="off" spellcheck="false">
+            <input class="field-input" id="findSearch" placeholder="Name or roll number" autocomplete="off" spellcheck="false">
             <div class="find-results" id="findResults" hidden></div>
           </div>
+          <button class="save-btn local-only" type="button" id="findCopy">Copy code</button>
+          <button class="export-btn local-only" type="button" id="findCopyMsg">Copy as message</button>
           <label class="name-field find-paste-wrap local-only">Add a friend's code or message
             <textarea class="field-input find-paste" id="findPaste" rows="1" spellcheck="false" placeholder="Paste here and it is added" aria-label="Paste a friend's code or message"></textarea>
           </label>
           <button class="save-btn local-only" type="button" id="findAdd">Add</button>
         </div>
+        <div class="find-chips" id="findChips"></div>
+        <div class="find-line">
+          <label class="check cloud-only find-share"><input type="checkbox" id="findShare" checked>Show my busy times and subjects to classmates</label>
+          <span class="find-status" id="findStatus" role="status" aria-live="polite" data-def="Your code only shows when you are busy. Subjects and rooms stay private."></span>
+        </div>
       </div>
       <textarea class="find-code" id="findCode" rows="3" readonly hidden spellcheck="false" aria-label="Your timetable code"></textarea>
-      <div class="find-row2">
-        <div class="find-chips" id="findChips"></div>
-        <span class="find-status" id="findStatus" role="status" aria-live="polite" data-def="Your code only shows when you are busy. Subjects and rooms stay private."></span>
-      </div>
       <p class="find-note" id="findNote"></p>
     </div>
 
@@ -695,6 +697,7 @@
     <div class="auth-fields">
       <label class="name-field">Roll number
         <input class="field-input" id="authRoll" maxlength="20" placeholder="e.g. B28-25" autocomplete="username" autocapitalize="characters" spellcheck="false">
+        <span class="field-hint" id="authRollHint">Cannot be edited after you register.</span>
       </label>
       <label class="name-field" id="authNameWrap">Your name (optional)
         <input class="field-input" id="authName" maxlength="24" placeholder="e.g. Anish" autocomplete="given-name">
@@ -705,13 +708,11 @@
       <label class="name-field" id="authPin2Wrap">Repeat PIN
         <input class="field-input" id="authPin2" type="password" inputmode="numeric" maxlength="6" placeholder="6 digits" autocomplete="new-password">
       </label>
-      <label class="check" id="authShareWrap"><input type="checkbox" id="authShare" checked>Let classmates see when I am busy in Find a time. Subjects and attendance stay private.</label>
       <label class="check"><input type="checkbox" id="authKeep" checked>Keep me signed in on this device</label>
     </div>
     <p class="auth-note" id="authLocalNote" style="display:none;"></p>
     <p class="auth-error" id="authError" role="alert"></p>
     <button class="save-btn" id="authSubmit" type="button" style="width:100%; padding:12px; font-size:14px; margin-top:6px;">Create account</button>
-    <p class="auth-note">Your timetable is saved in the class Google Sheet so you can open it on any device. Your roll number cannot be changed later. Forgot your PIN? Ask Anish to reset it in the sheet.</p>
   </div>
 </div>
 
@@ -733,9 +734,8 @@
     <div class="modal-head"><h2>Customise your schedule</h2></div>
     <p class="modal-hint">Add your subjects to build your own timetable, attendance tracker and reschedule log. <span class="local-only">Saved on this device only.</span><span class="cloud-only">Saved to your account.</span></p>
     <div class="cloud-account cloud-only" id="cloudAccount">
-      <span>Signed in as <b id="cloudRollTxt"></b>. Your roll number cannot be changed.</span>
+      <span>Signed in as <b id="cloudRollTxt"></b></span>
       <button class="export-btn" type="button" id="cloudSignOut2">Sign out</button>
-      <label class="check" style="flex-basis:100%;"><input type="checkbox" id="cloudShare" checked>Let classmates see when I am busy in Find a time. Subjects and attendance stay private.</label>
     </div>
 
     <label class="name-field" style="margin-bottom:16px;">Your name (optional)<input class="field-input" id="customiseName" maxlength="24" placeholder="e.g. Anish" autocomplete="given-name" style="max-width:260px;"></label>
@@ -1012,6 +1012,14 @@
     return arr;
   }
 
+  // rows of the weekly grid: the usual class times plus any time a class has been moved to
+  function rowTimesFor(cellMap) {
+    var set = {};
+    TIME_SLOTS.forEach(function (t) { set[t] = minutesFromLabel(t); });
+    Object.keys(cellMap).forEach(function (k) { var t = k.split('|')[1]; if (t) set[t] = minutesFromLabel(t); });
+    return Object.keys(set).sort(function (a, b) { return set[a] - set[b]; });
+  }
+
   function loadReschedules() {
     var raw = getStored(RESCHED_KEY); if (!raw) return {};
     var parsed; try { parsed = JSON.parse(raw); } catch (e) { return {}; }
@@ -1148,7 +1156,7 @@
     gridHead.innerHTML = headHtml;
 
     var rows = '';
-    TIME_SLOTS.forEach(function (time) {
+    rowTimesFor(cellMap).forEach(function (time) {
       rows += '<tr><td class="time-col">' + time + '</td>';
       for (var day = 0; day < 7; day++) {
         var hit = cellMap[day + '|' + time];
@@ -1708,6 +1716,29 @@
     });
     return bits;
   }
+  // which subject sits in each busy slot: names list plus one character per slot (10 weeks x 7 days x 7 slots)
+  function buildMySubjects() {
+    var names = [], map = [], i;
+    for (i = 0; i < TOTAL_WEEKS * 49; i++) map.push('-');
+    (ALL_SLOTS || []).forEach(function (sl) {
+      var eff = effectiveOf(sl);
+      var w = Math.floor(daysBetween(TERM_START, eff.date) / 7);
+      var d = (eff.date.getDay() + 6) % 7;
+      var slot = FIXED_MINS.indexOf(minutesFromLabel(eff.time));
+      if (w < 0 || w >= TOTAL_WEEKS || slot < 0) return;
+      var c = courseByKey(sl.courseKey), label = c ? String(c.abbr || c.fullCode || '') : '';
+      var k = names.indexOf(label);
+      if (k < 0 && names.length < 36) { names.push(label); k = names.length - 1; }
+      if (k >= 0) map[bitIndex(w, d, slot)] = k.toString(36);
+    });
+    return { names: names, map: map.join('') };
+  }
+  function subjectAt(p, w, d, sl) {
+    if (!p.subs || !p.subs.map) return '';
+    var ch = p.subs.map.charAt(bitIndex(w, d, sl));
+    if (!ch || ch === '-') return '';
+    return p.subs.names[parseInt(ch, 36)] || '';
+  }
   function isBusy(person, w, d, sl) { var idx = bitIndex(w, d, sl); return (person.bits[idx >> 3] >> (7 - (idx & 7))) & 1; }
 
   function encodeMyCode() {
@@ -1817,16 +1848,16 @@
     if (!CLOUD_ON) return friends.map(function (f, i) { return { name: f.name, bits: f.bits, created: f.created, idx: i }; });
     return safeParse(getStored(FRIEND_ROLLS_KEY), []).map(function (r, i) {
       var p = cloudPeople[r];
-      return p ? { name: p.name || r, bits: b64ToBytes(p.busy), created: daysSince2026(new Date(p.updatedAt || Date.now())), roll: r, idx: i }
+      return p ? { name: p.name || r, subs: p.subjects || null, bits: b64ToBytes(p.busy), created: daysSince2026(new Date(p.updatedAt || Date.now())), roll: r, idx: i }
                : { name: r, missing: true, roll: r, idx: i };
     });
   }
   function getPeople() {
     var mode = getStored(LABEL_KEY) || (window.innerWidth <= 640 ? 'letters' : 'names');
     var all = currentFriends();
-    var mine = { name: getName() || (CLOUD_ON && cloud.roll) || 'You', isMe: true, bits: buildMyBits(), created: daysSince2026(new Date()) };
+    var mine = { name: getName() || (CLOUD_ON && cloud.roll) || 'You', isMe: true, bits: buildMyBits(), subs: CLOUD_ON ? buildMySubjects() : null, created: daysSince2026(new Date()) };
     var people = [mine].concat(all.filter(function (f) { return !f.missing; }).map(function (f) {
-      return { name: f.name, isMe: false, bits: f.bits, created: f.created, idx: f.idx, roll: f.roll };
+      return { name: f.name, isMe: false, bits: f.bits, subs: f.subs, created: f.created, idx: f.idx, roll: f.roll };
     }));
     var labels = labelSets(people, mode);
     people.forEach(function (p, i) {
@@ -1958,9 +1989,13 @@
         html += '<div class="fcell all-free' + (c.span > 1 ? ' merged' : '') + '" style="' + pos + '" title="Everyone is free"><div class="ffree">' + CHECK_SVG + 'All free</div>' +
           (c.span > 1 ? '<div class="frange">' + freeRangeText(c) + '</div>' : '') + '</div>';
       } else {
-        var tip = 'Has class: ' + c.busy.map(function (p) { return p.name; }).join(', ') + (c.free.length ? '. Free: ' + c.free.map(function (p) { return p.name; }).join(', ') : '');
+        var w0 = findWeek - 1;
+        var tip = 'Has class: ' + c.busy.map(function (p) { var sb = subjectAt(p, w0, c.d, c.sl); return p.name + (sb ? ' (' + sb + ')' : ''); }).join(', ') + (c.free.length ? '. Free: ' + c.free.map(function (p) { return p.name; }).join(', ') : '');
         html += '<div class="fcell ' + c.kind + '" style="' + pos + '" title="' + esc(tip) + '"><div class="fchips">' +
-          c.busy.map(function (p) { return '<span class="fchip" style="--fc:' + p.color + ';">' + esc(p.label) + '</span>'; }).join('') +
+          c.busy.map(function (p) {
+            var sb = subjectAt(p, w0, c.d, c.sl);
+            return '<span class="fchip" style="--fc:' + p.color + ';" title="' + esc(p.name + (sb ? ': ' + sb : '')) + '">' + esc(p.label) + '</span>';
+          }).join('') +
           '</div><div class="fcount">' + (c.free.length ? c.free.length + ' free' : 'Nobody free') + '</div></div>';
       }
     });
@@ -2019,7 +2054,7 @@
   }
 
   function buildGroupCanvas(info) {
-    var S = 3, MARGIN = 18, BPAD = 14, TIME_W = 92, COL_W = 158, GAP = 6, HEAD_H = 46, MIN_ROW = 70, CHIP_H = 22, PADX = 10, PADY = 9;
+    var S = 3, MARGIN = 18, BPAD = 14, TIME_W = 92, COL_W = 158, GAP = 6, HEAD_H = 32, MIN_ROW = 70, CHIP_H = 22, PADX = 10, PADY = 9;
     var ff = "'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif";
     var serif = "'Fraunces', Georgia, 'Times New Roman', serif";
     var C = {
@@ -2077,9 +2112,6 @@
     ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
     ctx.font = '600 20px ' + serif; ctx.fillStyle = C.ink;
     ctx.fillText('Group free time', gx, gy + 14);
-    ctx.textAlign = 'right'; ctx.font = '800 13px ' + ff; ctx.fillStyle = C.accent;
-    ctx.fillText(weekRangeText(true), gx + gridW, gy + 14);
-    ctx.textAlign = 'left';
 
     legend.forEach(function (line, li) {
       var ly = gy + titleH + li * 26 + 12;
@@ -2100,10 +2132,8 @@
       ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
       ctx.font = '700 11.5px ' + ff; ctx.fillStyle = C.faint;
       if ('letterSpacing' in ctx) ctx.letterSpacing = '0.5px';
-      ctx.fillText(DAY_NAMES[d], colX[d] + 8, y0 + 13);
+      ctx.fillText(DAY_NAMES[d], colX[d] + 8, y0 + 15);
       if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
-      ctx.font = '600 11.5px ' + ff; ctx.fillStyle = C.soft;
-      ctx.fillText(fmtShort(addDays(monday, d)), colX[d] + 8, y0 + 30);
     }
     for (sl = 0; sl < 7; sl++) {
       var ty = y0 + HEAD_H + rowTop[sl];
@@ -2170,15 +2200,15 @@
   var authOverlay = document.getElementById('authOverlay');
   var authRoll = document.getElementById('authRoll'), authName = document.getElementById('authName');
   var authPin = document.getElementById('authPin'), authPin2 = document.getElementById('authPin2');
-  var authShare = document.getElementById('authShare'), authKeep = document.getElementById('authKeep');
+  var authKeep = document.getElementById('authKeep');
   var authSubmit = document.getElementById('authSubmit'), authError = document.getElementById('authError');
   var authTabNew = document.getElementById('authTabNew'), authTabIn = document.getElementById('authTabIn');
   var authLocalNote = document.getElementById('authLocalNote');
   var cloudBanner = document.getElementById('cloudBanner'), cloudBannerText = document.getElementById('cloudBannerText'), cloudBannerBtn = document.getElementById('cloudBannerBtn');
   var cloudFoot = document.getElementById('cloudFoot'), cloudFootText = document.getElementById('cloudFootText');
-  var cloudShare = document.getElementById('cloudShare'), findShare = document.getElementById('findShare');
+  var findShare = document.getElementById('findShare');
   var findSearch = document.getElementById('findSearch'), findResults = document.getElementById('findResults');
-  var authMode = 'new', authConfirming = false, bannerTimer = null;
+  var authMode = 'new', bannerTimer = null;
   var cloudPeople = safeParse(getStored(PEOPLE_KEY), {});
 
   function safeParse(str, fallback) { try { var v = JSON.parse(str); return v === null || v === undefined ? fallback : v; } catch (e) { return fallback; } }
@@ -2282,8 +2312,8 @@
   function updateCloudUi() {
     if (!CLOUD_ON) return;
     document.getElementById('cloudRollTxt').textContent = cloud.roll;
-    cloudShare.checked = cloud.share; findShare.checked = cloud.share;
-    findStatus.setAttribute('data-def', 'Classmates only see when you are busy. Subjects and attendance stay private.');
+    findShare.checked = cloud.share;
+    findStatus.setAttribute('data-def', 'Classmates see when you are busy and your subjects. Attendance stays private.');
     if (!findStatusTimers[findStatus.id]) setFindStatus(findStatus, '');
     setFoot(cloud.state === 'offline' ? 'Offline' : 'Saved');
   }
@@ -2299,12 +2329,14 @@
     setStored(NAME_KEY, d.name || '');
     cloud.applying = false;
     cloud.share = d.share !== false;
+    var needsSubjects = !d.subjects && d.courses && d.courses.length > 0;
     myCourses = loadCourses();
     initSchedule();
     nameInputs.forEach(function (el) { el.value = getName(); });
     refreshGreeting();
     updateCloudUi();
     if (panelFind.classList.contains('active')) renderFindTab();
+    if (needsSubjects && cloud.state === 'ready') cloudTouched();
   }
   function reloadFromCache() { myCourses = loadCourses(); initSchedule(); }
   function cloudBlocked() {
@@ -2316,7 +2348,7 @@
   /* ---- loading and saving ---- */
   function fullData() {
     return {
-      busy: bytesToB64(buildMyBits()),
+      busy: bytesToB64(buildMyBits()), subjects: buildMySubjects(),
       courses: safeParse(getStored(COURSES_KEY), []), resched: safeParse(getStored(RESCHED_KEY), {}),
       att: safeParse(getStored(ATT_KEY), {}), friends: safeParse(getStored(FRIEND_ROLLS_KEY), [])
     };
@@ -2455,15 +2487,14 @@
     addFriendRoll(b.getAttribute('data-roll'));
     findSearch.value = ''; findResults.hidden = true;
   });
-  function onShareChange(el) { cloud.share = el.checked; cloudShare.checked = cloud.share; findShare.checked = cloud.share; cloudTouched(); }
-  cloudShare.addEventListener('change', function () { onShareChange(cloudShare); });
+  function onShareChange(el) { cloud.share = el.checked; cloudTouched(); }
   findShare.addEventListener('change', function () { onShareChange(findShare); });
 
   /* ---- sign in and create account ---- */
   function setAuthMode(mode) {
-    authMode = mode; authConfirming = false;
+    authMode = mode;
     authTabNew.classList.toggle('active', mode === 'new'); authTabIn.classList.toggle('active', mode === 'in');
-    ['authNameWrap', 'authPin2Wrap', 'authShareWrap'].forEach(function (id) { document.getElementById(id).style.display = mode === 'new' ? '' : 'none'; });
+    ['authNameWrap', 'authPin2Wrap', 'authRollHint'].forEach(function (id) { document.getElementById(id).style.display = mode === 'new' ? '' : 'none'; });
     authSubmit.textContent = mode === 'new' ? 'Create account' : 'Sign in';
     authPin.setAttribute('autocomplete', mode === 'new' ? 'new-password' : 'current-password');
     authError.textContent = '';
@@ -2495,15 +2526,11 @@
     if (!/^\d{6}$/.test(pin)) { authError.textContent = 'The PIN must be exactly 6 digits.'; return; }
     if (authMode === 'new') {
       if (authPin2.value !== pin) { authError.textContent = 'The two PINs do not match.'; return; }
-      if (!authConfirming) {
-        authConfirming = true; authSubmit.textContent = 'Yes, my roll number is ' + roll;
-        authError.textContent = 'Check your roll number. You cannot change it later.'; return;
-      }
     }
     authError.textContent = ''; authBusy(true);
     var isNew = authMode === 'new';
     var body = isNew
-      ? { roll: roll, pin: pin, name: authName.value, share: authShare.checked, data: { busy: bytesToB64(buildMyBits()), courses: myCourses, resched: RESCHEDULES, att: attData, friends: [] } }
+      ? { roll: roll, pin: pin, name: authName.value, share: true, data: { busy: bytesToB64(buildMyBits()), subjects: buildMySubjects(), courses: myCourses, resched: RESCHEDULES, att: attData, friends: [] } }
       : { roll: roll, pin: pin };
     cloudCall(isNew ? 'register' : 'login', body).then(function (res) {
       authBusy(false);
@@ -2550,7 +2577,7 @@
   document.getElementById('cloudSignOut2').addEventListener('click', cloudSignOut);
   authTabNew.addEventListener('click', function () { setAuthMode('new'); });
   authTabIn.addEventListener('click', function () { setAuthMode('in'); });
-  authRoll.addEventListener('input', function () { authRoll.value = authRoll.value.toUpperCase().replace(/[^A-Z0-9\-\/]/g, ''); if (authConfirming) setAuthMode(authMode); });
+  authRoll.addEventListener('input', function () { authRoll.value = authRoll.value.toUpperCase().replace(/[^A-Z0-9\-\/]/g, ''); });
   [authRoll, authName, authPin, authPin2].forEach(function (el) { el.addEventListener('keydown', function (e) { if (e.key === 'Enter') submitAuth(); }); });
   [authPin, authPin2].forEach(function (el) { el.addEventListener('input', function () { el.value = el.value.replace(/\D/g, '').slice(0, 6); }); });
   authSubmit.addEventListener('click', submitAuth);
@@ -2677,7 +2704,7 @@
     rCourse.innerHTML = COURSES.map(function (c) { return '<option value="' + c.key + '">' + c.abbr + '</option>'; }).join('');
   }
   function populateTimeOptions() {
-    rTime.innerHTML = TIME_SLOTS.map(function (t) { return '<option value="' + t + '">' + t + '</option>'; }).join('');
+    rTime.innerHTML = FIXED_TIME_OPTIONS.map(function (t) { return '<option value="' + t + '">' + t + '</option>'; }).join('');
   }
   function populateSessions() {
     if (COURSES.length === 0) { rSession.innerHTML = ''; return; }
